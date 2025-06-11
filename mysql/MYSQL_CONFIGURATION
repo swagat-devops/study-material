@@ -1,0 +1,5 @@
+
+
+ #jdbc:mysql://172.17.0.2:3306/mydatabase
+root
+root_password
