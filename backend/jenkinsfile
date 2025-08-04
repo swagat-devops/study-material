@@ -61,9 +61,8 @@ pipeline {
           echo "Scanning Image for Vulnerabilities"
           sh'''
           mkdir -p target
-          trivy image --scanners vuln --offline-scan $IMAGE_NAME > target/trivyresults.txt
+          trivy image --scanners vuln --offline-scan $IMAGE_NAME > /home/ubuntu/jenkins/workspace/employee-management/backend/target/trivyresults.txt
           '''
-          archiveArtifacts artifacts: 'target/trivyresults.txt', fingerprint: true
         }
     }
 
