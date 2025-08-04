@@ -56,13 +56,14 @@ pipeline {
       }
     }
 
-   stage('Stage V Scan Image ') {
+   stage('Stage VII: Scan Image ') {
         steps { 
           echo "Scanning Image for Vulnerabilities"
-          sh "trivy image --scanners vuln --offline-scan $IMAGE_NAME
-          archiveArtifacts artifacts: 'target/Isacen.txt', fingerprint: true
+          sh "trivy image --scanners vuln --offline-scan $IMAGE_NAME > target/trivyresults.txt"
+          archiveArtifacts artifacts: 'target/trivyresults.txt', fingerprint: true
         }
-    }
+   }
+
 
     stage('Stage VI Smoke Test ') {
         steps { 
