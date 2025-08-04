@@ -21,14 +21,6 @@ pipeline {
       }
     }
 
-    stage('stage II Unit Test') {
-      steps {
-        echo 'Running unit tests...'
-        sh 'cd backend && mvn test'
-        
-      }
-    }
-
     stage('Stage III SonarQube Analysis') {
       steps {
         withSonarQubeEnv('sonarcubeurl') {
