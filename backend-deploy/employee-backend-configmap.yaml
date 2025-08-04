@@ -1,3 +1,0 @@
-#root@instance-20250317-111259:~/kubernetes-practice/CICD-PROJECTS/employee-management-system/backend-deploy# 
-#k create cm employee-backend-metadata-propfile -n dev --from-file Metadata/application.properties 
-#configmap/employee-backend-metadata-propfile created
