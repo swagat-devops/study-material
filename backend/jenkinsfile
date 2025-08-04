@@ -33,7 +33,7 @@ pipeline {
       steps {
         echo 'Packing applivcation'
         dir('backend') {
-          sh 'mvn package'
+          sh 'mvn clean package -DskipTests'
           archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
           sh 'cp target/*.jar .'
         }
