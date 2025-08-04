@@ -1,0 +1,79 @@
+pipeline {
+  agent { label 'build' }
+
+  tools {
+    maven 'Maven 4.0.0'  
+    jdk 'JDK 17'         
+  }
+
+  environment{
+        DOCKER_USERNAME = "swagatdevops"
+        IMAGE_NAME = "$DOCKER_USERNAME/myapp:${BUILD_NUMBER}"
+        
+  }
+
+
+  stages {
+    stage('Checkout') {
+      steps {
+        git branch: 'dev', url: 'https://github.com/swagat-devops/employee-management.git' 
+      }
+    }
+
+    stage('Stage I Compile') {
+      steps {
+        echo 'Compiling the project...'
+        sh 'cd backend && mvn compile'
+      }
+    }
+
+    stage('stage II Unit Test') {
+      steps {
+        echo 'Running unit tests...'
+        sh 'cd backend && mvn test'
+        
+      }
+    }
+
+    stage('Stage III SonarQube Analysis') {
+      steps {
+        withSonarQubeEnv('sonarcubeurl') {
+                sh 'cd backend && mvn sonar:sonar'
+        }
+      }
+   }
+
+    stage('Stage IV Package') {
+      steps {
+        echo 'Packaging the application...'
+        sh 'cd backend && mvn package'
+      }
+    }
+
+    stage('Stage V Archive Artifacts') {
+      steps {
+        echo 'Archiving artifacts...'
+        dir('backend') {
+          archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+          sh 'cp target/*.jar .'
+        }
+      }
+    }
+
+    stage('Stage VI Build Docker Image') {
+      steps {
+        echo 'Building Docker image...'
+        withCredentials([usernamePassword(credentialsId: 'docker_key', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+              dir('backend') {
+                     sh '''
+                     docker build -t $IMAGE_NAME .
+                     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin   
+                     docker push $IMAGE_NAME
+                 '''
+              }
+        }
+      
+      }
+    }
+  }
+}
