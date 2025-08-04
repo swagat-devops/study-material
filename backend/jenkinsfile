@@ -1,16 +1,10 @@
 pipeline {
   agent { label 'build' }
-
-  tools {
-    maven 'Maven 4.0.0'  
-    jdk 'JDK 17'         
-  }
-
-  environment{
-        DOCKER_USERNAME = "swagatdevops"
-        IMAGE_NAME = "$DOCKER_USERNAME/myapp:${BUILD_NUMBER}"
+        environment{
+          DOCKER_USERNAME = "swagatdevops"
+          IMAGE_NAME = "$DOCKER_USERNAME/myapp:${BUILD_NUMBER}"
         
-  }
+        }
 
 
   stages {
