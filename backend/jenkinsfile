@@ -59,7 +59,10 @@ pipeline {
    stage('Stage V Scan Image ') {
         steps { 
           echo "Scanning Image for Vulnerabilities"
-          sh "trivy image --scanners vuln --offline-scan $IMAGE_NAME > target/trivyresults.txt"
+          sh'''
+          mkdir -p target
+          trivy image --scanners vuln --offline-scan $IMAGE_NAME > target/trivyresults.txt
+          '''
           archiveArtifacts artifacts: 'target/trivyresults.txt', fingerprint: true
         }
     }
