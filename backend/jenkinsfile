@@ -59,10 +59,7 @@ pipeline {
    stage('Stage V Scan Image ') {
         steps { 
           echo "Scanning Image for Vulnerabilities"
-          sh'''
-          mkdir -p target
-          trivy image --scanners vuln --offline-scan $IMAGE_NAME > /home/ubuntu/jenkins/workspace/employee-management/backend/target/trivyresults.txt
-          '''
+          sh "trivy image --scanners vuln --offline-scan $IMAGE_NAME > target/trivyresults.txt"
         }
     }
 
