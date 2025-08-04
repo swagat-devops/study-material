@@ -31,19 +31,17 @@ pipeline {
 
     stage('Stage IV Package') {
       steps {
-        echo 'Packaging the application...'
-        sh 'cd backend && mvn package'
-      }
-    }
-
-    stage('Stage V Archive Artifacts') {
-      steps {
-        echo 'Archiving artifacts...'
+        echo 'Packing applivcation'
         dir('backend') {
+          sh 'mvn package'
           archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
           sh 'cp target/*.jar .'
         }
       }
+    }
+
+    stage('Stage V Archive Artifacts') {
+      
     }
 
     stage('Stage VI Build Docker Image') {
