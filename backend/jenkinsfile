@@ -2,7 +2,7 @@ pipeline {
   agent { label 'build' }
         environment{
           DOCKER_USERNAME = "swagatdevops"
-          IMAGE_NAME = "$DOCKER_USERNAME/myapp:${BUILD_NUMBER}"
+          IMAGE_NAME = "$DOCKER_USERNAME/backend:${BUILD_NUMBER}"
         
         }
 
