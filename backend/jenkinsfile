@@ -40,10 +40,6 @@ pipeline {
       }
     }
 
-    stage('Stage V Archive Artifacts') {
-      
-    }
-
     stage('Stage VI Build Docker Image') {
       steps {
         echo 'Building Docker image...'
