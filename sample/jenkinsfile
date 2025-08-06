@@ -1,0 +1,81 @@
+pipeline {
+  agent { label 'build' }
+        environment{
+          DOCKER_USERNAME = "swagatdevops"
+          IMAGE_NAME = "$DOCKER_USERNAME/backend:${BUILD_NUMBER}"
+        
+        }
+
+
+  stages {
+    stage('Checkout') {
+      steps {
+        git branch: 'dev', url: 'https://github.com/swagat-devops/employee-management.git' 
+      }
+    }
+
+    stage('Stage I Compile') {
+      steps {
+        echo 'Compiling the project...'
+        sh 'cd backend && mvn compile'
+      }
+    }
+
+    stage('Stage II SonarQube Analysis') {
+      steps {
+        withSonarQubeEnv('sonarcubeurl') {
+                sh 'cd backend && mvn sonar:sonar'
+        }
+      }
+   }
+
+    stage('Stage III Package') {
+      steps {
+        echo 'Packing applivcation'
+        dir('backend') {
+          sh 'mvn clean package -DskipTests'
+          archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+          sh 'cp target/*.jar .'
+        }
+      }
+    }
+
+    stage('Stage IV Build Docker Image') {
+      steps {
+        echo 'Building Docker image...'
+        withCredentials([usernamePassword(credentialsId: 'docker_key', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+              dir('backend') {
+                     sh '''
+                     docker build -t $IMAGE_NAME .
+                     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin   
+                     docker push $IMAGE_NAME
+                 '''
+              }
+        }
+      
+      }
+    }
+
+   stage('Stage VII: Scan Image ') {
+        steps { 
+          echo "Scanning Image for Vulnerabilities"
+          dir('backend') {
+                 sh '''
+                 mkdir -p target
+                 trivy image --scanners vuln --offline-scan $IMAGE_NAME > target/trivyresults.txt
+                '''
+         }
+      }
+   }
+
+
+    stage('Stage VI Smoke Test ') {
+        steps { 
+          echo "Smoke Test the Image completion"
+          sh "docker run -d --name smokerun -p 3000:3000 $IMAGE_NAME"
+          sh "sleep 90"
+          sh "docker rm --force smokerun"
+        }
+      }
+  }
+}

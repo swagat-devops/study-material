@@ -8,9 +8,9 @@ RUN npm run build --prod
 
 # Stage 2: Serve the Angular application
 FROM nginx:alpine
-COPY --from=build /app/dist/frontend /usr/share/nginx/html
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY --from=build /app/dist/* /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
-ENTRYPOINT ["/entrypoint.sh"]
 
+# Start NGINX (default command, but can be overridden)
+CMD ["nginx", "-g", "daemon off;"]
