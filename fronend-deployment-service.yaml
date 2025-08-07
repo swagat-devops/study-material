@@ -5,18 +5,29 @@ metadata:
   labels:
     app: frontend
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: frontend
   template:
     metadata:
-      name: Employee-frontend
       labels:
         app: frontend
     spec:
       containers:
         - name: frontend
-          image: swagatdevops/frontend:latest
+          image: swagatdevops/frontend:v17
           ports:
             - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 8000
+      targetPort: 80
+  type: NodePort
